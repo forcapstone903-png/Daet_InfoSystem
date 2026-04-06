@@ -164,6 +164,10 @@ $title = 'Daeteño - Discover Daet Tourism';
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        html { scroll-behavior: smooth; }
+        .hamburger-open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .hamburger-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .hamburger-open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
     </style>
 </head>
 <body class="bg-white">
@@ -172,7 +176,7 @@ $title = 'Daeteño - Discover Daet Tourism';
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center space-x-3">
-                    <a href="home.php" class="flex items-center">
+                    <a href="#hero" class="flex items-center smooth-scroll">
                         <img src="IMAGES/logo.png" 
                              alt="Daeteño Logo" 
                              class="h-10 w-auto object-contain"
@@ -181,17 +185,18 @@ $title = 'Daeteño - Discover Daet Tourism';
                             Daeteño
                         </span>
                     </a>
-                    <a href="home.php" class="text-2xl font-bold bg-gradient-to-r from-green-600 to-yellow-500 bg-clip-text text-transparent">
+                    <a href="#hero" class="text-2xl font-bold bg-gradient-to-r from-green-600 to-yellow-500 bg-clip-text text-transparent smooth-scroll">
                         Daeteño
                     </a>
                 </div>
 
+                <!-- Desktop Nav -->
                 <div class="hidden md:flex items-center space-x-6">
-                    <a href="home.php" class="text-green-600 font-medium">Home</a>
-                    <a href="tourist-spots.php" class="text-gray-600 hover:text-green-600">Tourist Spots</a>
-                    <a href="events.php" class="text-gray-600 hover:text-green-600">Events</a>
-                    <a href="blog.php" class="text-gray-600 hover:text-green-600">Blog</a>
-                    <a href="contact.php" class="text-gray-600 hover:text-green-600">Contact</a>
+                    <a href="#hero" class="text-green-600 font-medium smooth-scroll">Home</a>
+                    <a href="#tourist-spots" class="text-gray-600 hover:text-green-600 smooth-scroll">Tourist Spots</a>
+                    <a href="#events" class="text-gray-600 hover:text-green-600 smooth-scroll">Events</a>
+                    <a href="#blog" class="text-gray-600 hover:text-green-600 smooth-scroll">Blog</a>
+                    <a href="#cta" class="text-gray-600 hover:text-green-600 smooth-scroll">Contact</a>
                    <?php if(function_exists('isLoggedIn') && isLoggedIn()): ?>
                         <a href="dashboard.php" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
                             Dashboard
@@ -203,12 +208,69 @@ $title = 'Daeteño - Discover Daet Tourism';
                         <a href="auth/login.php" class="text-gray-600 hover:text-green-600 transition">Login</a>
                    <?php endif; ?>
                 </div>
+
+                <!-- Mobile Hamburger Button -->
+                <button id="mobile-menu-btn" class="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg hover:bg-gray-100 transition" aria-label="Toggle menu">
+                    <span class="hamburger-line block w-6 h-0.5 bg-gray-700 transition-all duration-300"></span>
+                    <span class="hamburger-line block w-6 h-0.5 bg-gray-700 transition-all duration-300 mt-1.5"></span>
+                    <span class="hamburger-line block w-6 h-0.5 bg-gray-700 transition-all duration-300 mt-1.5"></span>
+                </button>
             </div>
         </div>
+
     </nav>
 
+    <!-- Mobile Drawer Overlay -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden" aria-hidden="true"></div>
+
+    <!-- Mobile Drawer (slides in from right) -->
+    <div id="mobile-drawer" class="fixed top-0 right-0 h-full w-72 bg-white z-50 shadow-2xl flex flex-col md:hidden translate-x-full transition-transform duration-300 ease-in-out">
+        <!-- Drawer Header -->
+        <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+            <span class="text-xl font-bold bg-gradient-to-r from-green-600 to-yellow-500 bg-clip-text text-transparent">Daeteño</span>
+            <button id="drawer-close-btn" class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 transition text-gray-500" aria-label="Close menu">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Drawer Links -->
+        <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+            <a href="#hero" class="flex items-center gap-3 px-4 py-3 text-green-600 font-medium rounded-xl bg-green-50 smooth-scroll mobile-nav-link">
+                <i class="fas fa-home w-4 text-center"></i> Home
+            </a>
+            <a href="#tourist-spots" class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-xl transition smooth-scroll mobile-nav-link">
+                <i class="fas fa-map-marked-alt w-4 text-center"></i> Tourist Spots
+            </a>
+            <a href="#events" class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-xl transition smooth-scroll mobile-nav-link">
+                <i class="fas fa-calendar-alt w-4 text-center"></i> Events
+            </a>
+            <a href="#blog" class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-xl transition smooth-scroll mobile-nav-link">
+                <i class="fas fa-blog w-4 text-center"></i> Blog
+            </a>
+            <a href="#cta" class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-green-600 hover:bg-gray-50 rounded-xl transition smooth-scroll mobile-nav-link">
+                <i class="fas fa-envelope w-4 text-center"></i> Contact
+            </a>
+        </nav>
+
+        <!-- Drawer Footer Buttons -->
+        <div class="px-4 pb-8 pt-2 border-t border-gray-100 space-y-2">
+            <?php if(function_exists('isLoggedIn') && isLoggedIn()): ?>
+                <a href="dashboard.php" class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-medium">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="logout.php" class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-red-50 text-red-600 border border-red-200 rounded-xl hover:bg-red-100 transition font-medium">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            <?php else: ?>
+                <a href="auth/login.php" class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-medium">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+
     <!-- Hero Section -->
-    <div class="relative overflow-hidden h-[600px]">
+    <div id="hero" class="relative overflow-hidden h-[600px]">
         <div class="absolute inset-0">
             <img src="images/bagasbasbeach.webp" alt="Daet Tourism" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-black/30"></div>
@@ -236,7 +298,7 @@ $title = 'Daeteño - Discover Daet Tourism';
     </div>
 
     <!-- Featured Tourist Spots -->
-    <section class="py-16 bg-white">
+    <section id="tourist-spots" class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12 fade-in">
                 <h2 class="text-3xl font-bold text-gray-900 mb-4">Featured Tourist Spots</h2>
@@ -349,7 +411,7 @@ $title = 'Daeteño - Discover Daet Tourism';
     </section>
 
     <!-- Upcoming Events -->
-    <section class="py-16 bg-gray-50">
+    <section id="events" class="py-16 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12 fade-in">
                 <h2 class="text-3xl font-bold text-gray-900 mb-4">Upcoming Events</h2>
@@ -449,7 +511,7 @@ $title = 'Daeteño - Discover Daet Tourism';
     </section>
 
     <!-- Blog Section -->
-    <section class="py-16 bg-white">
+    <section id="blog" class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12 fade-in">
                 <h2 class="text-3xl font-bold text-gray-900 mb-4">Latest From Our Blog</h2>
@@ -524,7 +586,7 @@ $title = 'Daeteño - Discover Daet Tourism';
     </section>
 
     <!-- CTA Section -->
-    <section class="py-16 bg-gradient-to-br from-blue-50 to-cyan-50">
+    <section id="cta" class="py-16 bg-gradient-to-br from-blue-50 to-cyan-50">
         <div class="max-w-4xl mx-auto px-4 text-center">
             <h2 class="text-3xl font-bold text-gray-900 mb-6">Ready to Explore Daet?</h2>
             <p class="text-gray-600 text-lg mb-8">
@@ -555,6 +617,53 @@ $title = 'Daeteño - Discover Daet Tourism';
     </footer>
 
     <script>
+        // Mobile drawer
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const drawer = document.getElementById('mobile-drawer');
+        const overlay = document.getElementById('drawer-overlay');
+        const closeBtn = document.getElementById('drawer-close-btn');
+
+        function openDrawer() {
+            drawer.classList.remove('translate-x-full');
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            menuBtn.classList.add('hamburger-open');
+        }
+
+        function closeDrawer() {
+            drawer.classList.add('translate-x-full');
+            overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+            menuBtn.classList.remove('hamburger-open');
+        }
+
+        menuBtn.addEventListener('click', () => {
+            drawer.classList.contains('translate-x-full') ? openDrawer() : closeDrawer();
+        });
+        closeBtn.addEventListener('click', closeDrawer);
+        overlay.addEventListener('click', closeDrawer);
+
+        // Close drawer when a nav link is clicked
+        document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            link.addEventListener('click', closeDrawer);
+        });
+
+        // Smooth scroll with navbar offset
+        document.querySelectorAll('.smooth-scroll').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        const navHeight = document.querySelector('nav').offsetHeight;
+                        const top = target.getBoundingClientRect().top + window.scrollY - navHeight;
+                        window.scrollTo({ top, behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const counters = document.querySelectorAll('.counter');
             
