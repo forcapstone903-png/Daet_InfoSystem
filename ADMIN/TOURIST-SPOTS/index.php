@@ -90,124 +90,330 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tourist Spots Management - Daeteño Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .modal { transition: all 0.3s ease; }
-        .delete-btn, .edit-btn, .view-btn { transition: all 0.2s ease; }
-        .delete-btn:hover { transform: scale(1.1); color: #dc2626; }
-        .edit-btn:hover { transform: scale(1.1); color: #2563eb; }
-        .view-btn:hover { transform: scale(1.1); color: #16a34a; }
-        .table-row:hover { background-color: #f9fafb; }
-        .image-thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; }
-        @keyframes fadeOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
-        .toast { animation: fadeOut 3s ease-in-out forwards; }
+        * {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(145deg, #f1f5f9 0%, #e9eef5 100%);
+            min-height: 100vh;
+        }
+        
+        /* Glassmorphism header */
+        .glass-header {
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        /* Modern card styling */
+        .stat-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+            border-radius: 1.5rem;
+            transition: all 0.25s ease;
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 8px 20px -6px rgba(0,0,0,0.08);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 28px -12px rgba(0,0,0,0.12);
+        }
+        
+        /* Table container refinement */
+        .table-container {
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(2px);
+            border-radius: 1.5rem;
+            box-shadow: 0 12px 30px -10px rgba(0,0,0,0.08);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        /* Modern inputs */
+        .search-input {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 2rem;
+            transition: all 0.2s ease;
+            padding-left: 2.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+            outline: none;
+        }
+        
+        .filter-select {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 2rem;
+            padding: 0.5rem 1rem;
+            background-color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+            outline: none;
+        }
+        
+        /* Button styles */
+        .btn-primary-modern {
+            background: linear-gradient(105deg, #2563eb, #1e40af);
+            border-radius: 2rem;
+            padding: 0.65rem 1.6rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px -4px rgba(37,99,235,0.3);
+        }
+        
+        .btn-primary-modern:hover {
+            background: linear-gradient(105deg, #1d4ed8, #1e3a8a);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px -6px rgba(37,99,235,0.4);
+        }
+        
+        /* Table row hover */
+        .table-row {
+            transition: all 0.2s ease;
+        }
+        
+        .table-row:hover {
+            background: linear-gradient(90deg, #fefefe, #fafcff);
+            transform: scale(1.002);
+        }
+        
+        /* Action buttons */
+        .action-btn {
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 12px;
+            background: transparent;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .action-edit:hover { background: #eff6ff; color: #2563eb; }
+        .action-view:hover { background: #ecfdf5; color: #059669; }
+        .action-delete:hover { background: #fef2f2; color: #dc2626; }
+        
+        /* Modal redesign */
+        .modal-modern {
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        /* Image thumbnail */
+        .image-thumb {
+            width: 44px;
+            height: 44px;
+            object-fit: cover;
+            border-radius: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+        }
+        
+        .image-thumb:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Category badges */
+        .category-badge {
+            border-radius: 2rem;
+            padding: 0.25rem 0.85rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+        
+        /* Toast animation */
+        .toast-animated {
+            animation: slideUpFade 0.4s ease-out, fadeOut 3s ease-in-out forwards;
+        }
+        
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateY(0); }
+            70% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); visibility: hidden; }
+        }
+        
+        /* Featured badge pulse */
+        .featured-badge {
+            background: linear-gradient(135deg, #fef3c7, #fffbeb);
+            border: 1px solid #fde68a;
+        }
+        
+        /* Scrollbar refinement */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
     </style>
 </head>
-<body class="bg-gray-50">
-    <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between py-4">
-                <div class="flex items-center space-x-4">
-                    <a href="../dashboard.php" class="flex items-center text-white/80 hover:text-white transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
-                    </a>
+<body class="antialiased">
+
+    <!-- Glass Morphism Header -->
+    <div class="glass-header sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-5">
+                <a href="../dashboard.php" class="flex items-center gap-2 text-white/85 hover:text-white transition-all duration-200 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">
+                    <i class="fas fa-arrow-left text-xs"></i>
+                    <span>Back to Dashboard</span>
+                </a>
+                <div class="hidden sm:block h-6 w-px bg-white/20"></div>
+                <div class="flex items-center gap-2 text-white/90 text-sm font-medium bg-white/10 px-4 py-1.5 rounded-full">
+                    <i class="fas fa-umbrella-beach text-blue-200"></i>
+                    <span>Spot Manager</span>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-blue-200">Tourist Spots Management</span>
-                    <div class="h-6 w-px bg-white/30"></div>
-                    <span class="text-sm text-blue-200">Welcome, <?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Admin'); ?></span>
-                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-sm text-blue-100"><i class="far fa-user-circle mr-1"></i> <?php echo htmlspecialchars($_SESSION['full_name'] ?? 'Admin'); ?></span>
             </div>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="flex justify-between items-center mb-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">Tourist Spots Management</h1>
-                <p class="text-gray-600">Manage all tourist destinations in Daet</p>
+                <div class="flex items-center gap-2 text-blue-600 text-sm font-semibold mb-1">
+                    <i class="fas fa-compass"></i>
+                    <span>Destination Management</span>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-800">Tourist <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Spots</span></h1>
+                <p class="text-slate-500 mt-1 text-base">Manage all tourist destinations in Daet, Camarines Norte</p>
             </div>
-            <a href="create.php" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow">
-                <i class="fas fa-plus mr-2"></i> Add New Spot
+            <a href="create.php" class="btn-primary-modern text-white inline-flex items-center gap-2 shadow-md">
+                <i class="fas fa-plus-circle"></i> Add New Spot
             </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 shadow-sm">
-                <div class="flex items-center">
-                    <div class="h-12 w-12 rounded-lg bg-blue-200 flex items-center justify-center mr-3">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="stat-card p-5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Total Spots</p>
+                        <p class="text-3xl font-bold text-slate-800 mt-1"><?php echo $stats['active_spots']; ?></p>
+                    </div>
+                    <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                         <i class="fas fa-map-marker-alt text-blue-600 text-xl"></i>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-600">Total Spots</p>
-                        <p class="text-2xl font-bold text-gray-900"><?php echo $stats['active_spots']; ?></p>
-                    </div>
                 </div>
+                <div class="mt-2 text-xs text-slate-400">Active destinations</div>
             </div>
-            <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-4 shadow-sm">
-                <div class="flex items-center">
-                    <div class="h-12 w-12 rounded-lg bg-yellow-200 flex items-center justify-center mr-3">
-                        <i class="fas fa-star text-yellow-600 text-xl"></i>
-                    </div>
+            <div class="stat-card p-5">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-600">Featured Spots</p>
-                        <p class="text-2xl font-bold text-gray-900"><?php echo $stats['featured_spots']; ?></p>
+                        <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Featured Spots</p>
+                        <p class="text-3xl font-bold text-slate-800 mt-1"><?php echo $stats['featured_spots']; ?></p>
+                    </div>
+                    <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
+                        <i class="fas fa-star text-amber-600 text-xl"></i>
                     </div>
                 </div>
+                <div class="mt-2 text-xs text-slate-400">⭐ 4.5+ rating</div>
             </div>
-            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 shadow-sm">
-                <div class="flex items-center">
-                    <div class="h-12 w-12 rounded-lg bg-green-200 flex items-center justify-center mr-3">
-                        <i class="fas fa-eye text-green-600 text-xl"></i>
-                    </div>
+            <div class="stat-card p-5">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-600">Total Views</p>
-                        <p class="text-2xl font-bold text-gray-900"><?php echo number_format($stats['total_views']); ?></p>
+                        <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Total Views</p>
+                        <p class="text-3xl font-bold text-slate-800 mt-1"><?php echo number_format($stats['total_views']); ?></p>
+                    </div>
+                    <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center">
+                        <i class="fas fa-eye text-emerald-600 text-xl"></i>
                     </div>
                 </div>
+                <div class="mt-2 text-xs text-slate-400">Cumulative visits</div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <h2 class="text-lg font-semibold text-gray-900">All Tourist Spots</h2>
-                    <div class="flex flex-col sm:flex-row items-center gap-3">
-                        <div class="relative">
-                            <input type="text" id="searchInput" placeholder="Search spots..." 
-                                   class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64">
-                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                        </div>
-                        <select id="filterSelect" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
-                            <option value="all">All Spots</option>
-                            <option value="featured">Featured Only</option>
-                            <option value="top_rated">Top Rated (4.5+)</option>
-                        </select>
+        <!-- Main Table Card -->
+        <div class="table-container">
+            <div class="table-header px-6 py-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fas fa-table-list text-blue-500"></i> All Tourist Spots
+                </h2>
+                <div class="flex flex-col sm:flex-row items-center gap-3">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="searchInput" placeholder="Search spots..." 
+                               class="search-input pl-10 pr-4 py-2 w-64">
                     </div>
+                    <select id="filterSelect" class="filter-select">
+                        <option value="all">✨ All Spots</option>
+                        <option value="featured">⭐ Featured Only</option>
+                        <option value="top_rated">🏆 Top Rated (4.5+)</option>
+                    </select>
                 </div>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                <table class="min-w-full divide-y divide-slate-100">
+                    <thead class="bg-slate-50/80">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spot</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Featured</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Spot</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Category</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Views</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Rating</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Featured</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="touristSpotsTable" class="bg-white divide-y divide-gray-200">
+                    <tbody id="touristSpotsTable" class="bg-white divide-y divide-slate-100">
                         <?php if (empty($touristSpots)): ?>
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center">
-                                <div class="text-center">
-                                    <i class="fas fa-database text-4xl mb-3 text-gray-300"></i>
-                                    <p class="text-gray-500">No tourist spots found</p>
-                                    <p class="text-sm text-gray-400 mt-2">Click "Add New Spot" to create your first tourist spot.</p>
+                            <td colspan="6" class="px-6 py-16 text-center">
+                                <div class="flex flex-col items-center">
+                                    <div class="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                                        <i class="fas fa-database text-3xl text-slate-400"></i>
+                                    </div>
+                                    <p class="text-slate-500 font-medium">No tourist spots found</p>
+                                    <p class="text-sm text-slate-400 mt-1">Click "Add New Spot" to create your first destination.</p>
                                 </div>
                             </td>
                         </tr>
@@ -219,72 +425,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
                                 $firstImage = $firstImage ? trim($firstImage, '"') : null;
                                 $locationData = json_decode($spot['location'] ?? '{}', true);
                             ?>
-                            <tr class="table-row hover:bg-gray-50 transition-colors" 
+                            <tr class="table-row" 
                                 data-id="<?php echo $spot['id']; ?>"
                                 data-rating="<?php echo round($spot['avg_rating'] ?? 0, 1); ?>"
                                 data-featured="<?php echo $isFeatured ? 'true' : 'false'; ?>">
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center">
+                                    <div class="flex items-center gap-3">
                                         <?php if ($firstImage && file_exists('../../' . $firstImage)): ?>
                                             <img src="../../<?php echo htmlspecialchars($firstImage); ?>" 
                                                  alt="<?php echo htmlspecialchars($spot['name']); ?>"
-                                                 class="h-10 w-10 rounded-lg object-cover mr-3">
+                                                 class="image-thumb">
                                         <?php else: ?>
-                                            <div class="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
-                                                <i class="fas fa-umbrella-beach text-blue-600"></i>
+                                            <div class="h-11 w-11 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+                                                <i class="fas fa-umbrella-beach text-blue-500 text-lg"></i>
                                             </div>
                                         <?php endif; ?>
                                         <div>
-                                            <div class="font-medium text-gray-900"><?php echo htmlspecialchars($spot['name']); ?></div>
-                                            <div class="text-sm text-gray-500">
+                                            <div class="font-semibold text-slate-800"><?php echo htmlspecialchars($spot['name']); ?></div>
+                                            <div class="text-xs text-slate-400 mt-0.5">
                                                 <?php echo htmlspecialchars($locationData['address'] ?? 'Daet, Camarines Norte'); ?>
                                             </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                                    <span class="category-badge bg-blue-50 text-blue-700">
                                         <?php echo ucfirst(htmlspecialchars($spot['category'] ?? 'Uncategorized')); ?>
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-gray-600">
-                                    <i class="fas fa-eye text-gray-400 mr-1"></i>
+                                <td class="px-6 py-4 text-slate-600 text-sm">
+                                    <i class="fas fa-eye text-slate-300 mr-1"></i>
                                     <?php echo number_format($spot['views_count'] ?? 0); ?>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-star text-amber-400 mr-1"></i>
-                                        <span class="font-medium"><?php echo number_format($spot['avg_rating'] ?? 0, 1); ?></span>
-                                        <span class="text-gray-400 ml-1">(<?php echo $spot['review_count'] ?? 0; ?>)</span>
+                                    <div class="flex items-center gap-1">
+                                        <i class="fas fa-star text-amber-400 text-sm"></i>
+                                        <span class="font-semibold text-slate-700"><?php echo number_format($spot['avg_rating'] ?? 0, 1); ?></span>
+                                        <span class="text-slate-400 text-xs ml-1">(<?php echo $spot['review_count'] ?? 0; ?>)</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <?php if ($isFeatured): ?>
-                                        <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">
-                                            <i class="fas fa-star mr-1"></i>Featured
+                                        <span class="featured-badge px-3 py-1 text-xs font-semibold rounded-full text-amber-700">
+                                            <i class="fas fa-star text-amber-500 mr-1"></i> Featured
                                         </span>
                                     <?php else: ?>
-                                        <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-500">
+                                        <span class="px-3 py-1 text-xs rounded-full bg-slate-100 text-slate-500">
                                             No
                                         </span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex space-x-3">
+                                    <div class="flex gap-2">
                                         <button onclick="editSpot('<?php echo $spot['id']; ?>')" 
-                                                class="edit-btn text-blue-600 hover:text-blue-800 transition-colors"
+                                                class="action-btn action-edit text-blue-500"
                                                 title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button onclick="viewSpot('<?php echo $spot['id']; ?>')" 
-                                                class="view-btn text-green-600 hover:text-green-800 transition-colors"
+                                                class="action-btn action-view text-emerald-500"
                                                 title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         <button onclick="deleteSpot('<?php echo $spot['id']; ?>', '<?php echo htmlspecialchars($spot['name']); ?>')" 
-                                                class="delete-btn text-red-600 hover:text-red-800 transition-colors"
+                                                class="action-btn action-delete text-red-400"
                                                 title="Delete">
-                                            <i class="fas fa-trash"></i>
+                                            <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -298,20 +504,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 modal shadow-xl">
+    <div id="deleteModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 transition-all">
+        <div class="modal-modern max-w-md w-full mx-4 p-6">
             <div class="text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                <div class="mx-auto h-14 w-14 rounded-2xl bg-red-100 flex items-center justify-center mb-4">
+                    <i class="fas fa-trash-alt text-red-600 text-2xl"></i>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Delete Tourist Spot</h3>
-                <p class="text-sm text-gray-500 mb-4" id="deleteMessage">Are you sure you want to delete this tourist spot? This action cannot be undone.</p>
-                <div class="flex justify-center space-x-3">
-                    <button onclick="closeDeleteModal()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Delete Tourist Spot</h3>
+                <p class="text-slate-500 text-sm mb-6" id="deleteMessage">Are you sure you want to delete this tourist spot? This action cannot be undone.</p>
+                <div class="flex justify-center gap-3">
+                    <button onclick="closeDeleteModal()" class="px-5 py-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition text-slate-600 font-medium">
                         Cancel
                     </button>
-                    <button onclick="confirmDelete()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-                        Delete
+                    <button onclick="confirmDelete()" class="px-5 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition shadow-md font-medium">
+                        Delete Permanently
                     </button>
                 </div>
             </div>
@@ -319,24 +525,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
     </div>
 
     <!-- View Details Modal -->
-    <div id="viewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 modal shadow-xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4 sticky top-0 bg-white pb-3 border-b">
-                <h3 class="text-lg font-medium text-gray-900">Tourist Spot Details</h3>
-                <button onclick="closeViewModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <i class="fas fa-times text-xl"></i>
+    <div id="viewModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="modal-modern max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-slate-100 px-6 py-4 flex justify-between items-center rounded-t-2xl">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fas fa-info-circle text-blue-500"></i> Spot Details
+                </h3>
+                <button onclick="closeViewModal()" class="text-slate-400 hover:text-slate-600 transition text-xl">
+                    <i class="fas fa-times-circle"></i>
                 </button>
             </div>
-            <div id="spotDetails" class="space-y-3"></div>
-            <div class="mt-6 flex justify-end">
-                <button onclick="closeViewModal()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+            <div class="p-6" id="spotDetails">
+                <!-- Dynamic content -->
+            </div>
+            <div class="border-t border-slate-100 px-6 py-4 flex justify-end">
+                <button onclick="closeViewModal()" class="px-5 py-2.5 bg-slate-600 text-white rounded-xl hover:bg-slate-700 transition font-medium">
                     Close
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-4 right-4 hidden z-50"></div>
+    <!-- Toast Notifications -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden"></div>
 
     <script>
         let spotToDelete = null;
@@ -394,42 +605,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
                     const images = data.images ? data.images.replace(/[{}]/g, '').split(',').map(img => img.trim().replace(/"/g, '')) : [];
                     
                     const detailsHtml = `
-                        <div class="border-b pb-3">
-                            <label class="text-sm font-medium text-gray-500 block">Spot Name</label>
-                            <p class="text-gray-900 font-medium">${escapeHtml(data.name)}</p>
-                        </div>
-                        <div class="border-b pb-3">
-                            <label class="text-sm font-medium text-gray-500 block">Description</label>
-                            <p class="text-gray-700">${escapeHtml(data.description || 'No description provided')}</p>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4 border-b pb-3">
-                            <div>
-                                <label class="text-sm font-medium text-gray-500 block">Category</label>
-                                <p class="text-gray-900">${escapeHtml(data.category || 'Uncategorized')}</p>
+                        <div class="space-y-4">
+                            <div class="bg-slate-50 rounded-xl p-4">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Spot Name</label>
+                                <p class="text-slate-800 font-bold text-lg mt-1">${escapeHtml(data.name)}</p>
                             </div>
-                            <div>
-                                <label class="text-sm font-medium text-gray-500 block">Views</label>
-                                <p class="text-gray-900">${Number(data.views_count || 0).toLocaleString()}</p>
+                            <div class="bg-slate-50 rounded-xl p-4">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Description</label>
+                                <p class="text-slate-700 mt-1 leading-relaxed">${escapeHtml(data.description || 'No description provided')}</p>
                             </div>
-                        </div>
-                        <div class="border-b pb-3">
-                            <label class="text-sm font-medium text-gray-500 block">Location</label>
-                            <p class="text-gray-900">${escapeHtml(locationData.address || 'Daet, Camarines Norte')}</p>
-                            ${locationData.coordinates ? `<p class="text-sm text-gray-500 mt-1">Lat: ${locationData.coordinates.lat}, Lng: ${locationData.coordinates.lng}</p>` : ''}
-                        </div>
-                        ${images.length > 0 && images[0] ? `
-                        <div class="border-b pb-3">
-                            <label class="text-sm font-medium text-gray-500 block">Images</label>
-                            <div class="flex gap-2 mt-2 flex-wrap">
-                                ${images.map(img => `<img src="../../${img}" alt="Spot image" class="h-20 w-20 object-cover rounded-lg shadow" onerror="this.style.display='none'">`).join('')}
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-slate-50 rounded-xl p-4">
+                                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Category</label>
+                                    <p class="text-slate-800 font-medium mt-1">${escapeHtml(data.category || 'Uncategorized')}</p>
+                                </div>
+                                <div class="bg-slate-50 rounded-xl p-4">
+                                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Views</label>
+                                    <p class="text-slate-800 font-medium mt-1">${Number(data.views_count || 0).toLocaleString()}</p>
+                                </div>
                             </div>
-                        </div>
-                        ` : ''}
-                        <div>
-                            <label class="text-sm font-medium text-gray-500 block">Rating</label>
-                            <div class="flex items-center mt-1">
-                                ${generateStarRating(data.avg_rating || 0)}
-                                <span class="ml-2 text-gray-600">(${data.review_count || 0} reviews)</span>
+                            <div class="bg-slate-50 rounded-xl p-4">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Location</label>
+                                <p class="text-slate-800 font-medium mt-1">${escapeHtml(locationData.address || 'Daet, Camarines Norte')}</p>
+                                ${locationData.coordinates ? `<p class="text-slate-500 text-sm mt-1"><i class="fas fa-map-pin"></i> Lat: ${locationData.coordinates.lat}, Lng: ${locationData.coordinates.lng}</p>` : ''}
+                            </div>
+                            ${images.length > 0 && images[0] ? `
+                            <div class="bg-slate-50 rounded-xl p-4">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Images</label>
+                                <div class="flex gap-3 mt-3 flex-wrap">
+                                    ${images.map(img => `<img src="../../${img}" alt="Spot image" class="h-24 w-24 object-cover rounded-xl shadow-md hover:scale-105 transition" onerror="this.style.display='none'">`).join('')}
+                                </div>
+                            </div>
+                            ` : ''}
+                            <div class="bg-slate-50 rounded-xl p-4">
+                                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Rating</label>
+                                <div class="flex items-center mt-2">
+                                    ${generateStarRating(data.avg_rating || 0)}
+                                    <span class="ml-2 text-slate-600 text-sm">(${data.review_count || 0} reviews)</span>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -466,7 +679,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
         function deleteSpot(id, name) {
             spotToDelete = id;
             spotNameToDelete = name;
-            document.getElementById('deleteMessage').innerHTML = `Are you sure you want to delete "<strong>${escapeHtml(name)}</strong>"? This action cannot be undone.`;
+            document.getElementById('deleteMessage').innerHTML = `Are you sure you want to delete "<strong class="text-slate-800">${escapeHtml(name)}</strong>"? This action cannot be undone.`;
             document.getElementById('deleteModal').classList.remove('hidden');
             document.getElementById('deleteModal').classList.add('flex');
         }
@@ -521,20 +734,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WI
         
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
-            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            const bgGradient = type === 'success' ? 'from-emerald-500 to-emerald-600' : 'from-red-500 to-red-600';
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
             
             toast.innerHTML = `
-                <div class="${bgColor} text-white px-6 py-3 rounded-lg shadow-lg flex items-center toast">
-                    <i class="fas ${icon} mr-2"></i>
-                    <span>${escapeHtml(message)}</span>
+                <div class="bg-gradient-to-r ${bgGradient} text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 toast-animated">
+                    <i class="fas ${icon} text-lg"></i>
+                    <span class="font-medium">${escapeHtml(message)}</span>
                 </div>
             `;
             toast.classList.remove('hidden');
             
             setTimeout(() => {
                 toast.classList.add('hidden');
-            }, 3000);
+            }, 3200);
         }
         
         function escapeHtml(text) {

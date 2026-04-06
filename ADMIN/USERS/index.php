@@ -1,10 +1,10 @@
 <?php
 // index.php - Users Management Page
-require_once 'C:\Users\Jerwin\Downloads\DAETINFOSYSTEM\dbconn.php';
+require_once 'C:\Users\oleng\Downloads\Daet_InfoSystem-main\dbconn.php';
 
 // Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
-    redirect('C:\Users\Jerwin\Downloads\DAETINFOSYSTEM\AUTH\login.php');
+    redirect('C:\Users\oleng\Downloads\Daet_InfoSystem-main\AUTH\login.php');
 }
 
 // Get real statistics from database
@@ -171,185 +171,385 @@ $userName = $_SESSION['full_name'] ?? 'Administrator';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Users Management - Daeteño Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .modal {
-            transition: all 0.3s ease;
+        * {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
         }
-        .action-btn {
+        
+        body {
+            background: linear-gradient(145deg, #f1f5f9 0%, #e9eef5 100%);
+            min-height: 100vh;
+        }
+        
+        /* Glassmorphism header */
+        .glass-header {
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        /* Modern stat cards */
+        .stat-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+            border-radius: 1.5rem;
+            transition: all 0.25s ease;
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 8px 20px -6px rgba(0,0,0,0.06);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 28px -12px rgba(0,0,0,0.12);
+        }
+        
+        /* Main card container */
+        .main-card {
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(2px);
+            border-radius: 1.5rem;
+            box-shadow: 0 12px 30px -10px rgba(0,0,0,0.08);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            overflow: hidden;
+        }
+        
+        /* Table header */
+        .table-header-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        /* Modern inputs */
+        .search-input {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 2rem;
+            transition: all 0.2s ease;
+            padding-left: 2.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .search-input:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16,185,129,0.12);
+            outline: none;
+        }
+        
+        .filter-select {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 2rem;
+            padding: 0.5rem 1rem;
+            background-color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
             transition: all 0.2s ease;
         }
-        .action-btn:hover {
-            transform: scale(1.1);
+        
+        .filter-select:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16,185,129,0.12);
+            outline: none;
         }
+        
+        /* Primary button */
+        .btn-primary-modern {
+            background: linear-gradient(105deg, #10b981, #059669);
+            border-radius: 2rem;
+            padding: 0.65rem 1.6rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px -4px rgba(16,185,129,0.3);
+        }
+        
+        .btn-primary-modern:hover {
+            background: linear-gradient(105deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px -6px rgba(16,185,129,0.4);
+        }
+        
+        /* Table row hover */
+        .table-row {
+            transition: all 0.2s ease;
+        }
+        
         .table-row:hover {
-            background-color: #f9fafb;
+            background: linear-gradient(90deg, #fefefe, #f0fdf4);
+            transform: scale(1.002);
         }
-        .role-badge {
-            transition: all 0.2s ease;
+        
+        /* Action buttons */
+        .action-btn {
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 12px;
+            background: transparent;
         }
-        .role-badge:hover {
-            transform: scale(1.05);
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        .action-edit:hover { background: #eff6ff; color: #2563eb; }
+        .action-key:hover { background: #ecfdf5; color: #059669; }
+        .action-delete:hover { background: #fef2f2; color: #dc2626; }
+        
+        /* User avatar */
+        .user-avatar {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 8px -2px rgba(16,185,129,0.3);
         }
-        .fade-in {
-            animation: fadeIn 0.3s ease-out;
+        
+        /* Role badges */
+        .role-badge-admin {
+            background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+            color: #6b21a5;
+            border: 1px solid #d8b4fe;
         }
+        
+        .role-badge-user {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        
+        /* Status badges */
+        .status-active {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+        
+        .status-inactive {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        
+        /* Modal redesign */
+        .modal-modern {
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        /* Permissions card */
+        .permissions-card {
+            background: linear-gradient(135deg, #fefefe, #fafcff);
+            border: 1px solid #e2e8f0;
+            border-radius: 1.25rem;
+        }
+        
+        /* Toast animation */
         .toast-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
+            animation: slideInRight 0.4s ease-out, fadeOut 3s ease-in-out forwards;
         }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateX(0); }
+            70% { opacity: 1; transform: translateX(0); }
+            100% { opacity: 0; transform: translateX(20px); visibility: hidden; }
+        }
+        
+        /* Modal fade in */
+        .fade-in {
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Admin Header -->
-    <div class="bg-gradient-to-r from-green-600 to-green-800 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between py-4">
-                <div class="flex items-center space-x-4">
-                    <a href="../dashboard.php" class="flex items-center text-white/80 hover:text-white transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Back to Dashboard
-                    </a>
-                    <div class="h-6 w-px bg-white/30"></div>
-                    <span class="text-white font-medium">Users Management</span>
+<body class="antialiased">
+
+    <!-- Glass Header -->
+    <div class="glass-header sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-5">
+                <a href="../dashboard.php" class="flex items-center gap-2 text-white/85 hover:text-white transition-all duration-200 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">
+                    <i class="fas fa-arrow-left text-xs"></i>
+                    <span>Back to Dashboard</span>
+                </a>
+                <div class="hidden sm:block h-6 w-px bg-white/20"></div>
+                <div class="flex items-center gap-2 text-white/90 text-sm font-medium bg-white/10 px-4 py-1.5 rounded-full">
+                    <i class="fas fa-users text-emerald-200"></i>
+                    <span>User Manager</span>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm"><i class="fas fa-user-circle mr-1"></i> <?php echo htmlspecialchars($userName); ?></span>
-                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-sm text-emerald-100"><i class="far fa-user-circle mr-1"></i> <?php echo htmlspecialchars($userName); ?></span>
             </div>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="flex justify-between items-center mb-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">Users Management</h1>
-                <p class="text-gray-600">Manage system users and administrators</p>
+                <div class="flex items-center gap-2 text-emerald-600 text-sm font-semibold mb-1">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Access Management</span>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-800">User <span class="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Management</span></h1>
+                <p class="text-slate-500 mt-1 text-base">Manage system users, roles, and permissions</p>
             </div>
             <button onclick="openAddUserModal()" 
-               class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                <i class="fas fa-user-plus mr-2"></i> Add User
+               class="btn-primary-modern text-white inline-flex items-center gap-2 shadow-md">
+                <i class="fas fa-user-plus"></i> Add User
             </button>
         </div>
 
         <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div class="bg-white rounded-lg shadow border border-gray-100 p-4">
-                <div class="flex items-center">
-                    <div class="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
-                        <i class="fas fa-users text-blue-600"></i>
-                    </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="stat-card p-5">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-600">Total Users</p>
-                        <p class="text-xl font-bold text-gray-900" id="totalUsers"><?php echo $stats['total_users']; ?></p>
+                        <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Total Users</p>
+                        <p class="text-3xl font-bold text-slate-800 mt-1" id="totalUsers"><?php echo $stats['total_users']; ?></p>
+                    </div>
+                    <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
                     </div>
                 </div>
+                <div class="mt-2 text-xs text-slate-400">Registered accounts</div>
             </div>
-            <div class="bg-white rounded-lg shadow border border-gray-100 p-4">
-                <div class="flex items-center">
-                    <div class="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center mr-3">
-                        <i class="fas fa-user-check text-green-600"></i>
-                    </div>
+            <div class="stat-card p-5">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-600">Active Users</p>
-                        <p class="text-xl font-bold text-gray-900" id="activeUsers"><?php echo $stats['active_users']; ?></p>
+                        <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Active Users</p>
+                        <p class="text-3xl font-bold text-slate-800 mt-1" id="activeUsers"><?php echo $stats['active_users']; ?></p>
+                    </div>
+                    <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center">
+                        <i class="fas fa-user-check text-emerald-600 text-xl"></i>
                     </div>
                 </div>
+                <div class="mt-2 text-xs text-slate-400">Active status</div>
             </div>
-            <div class="bg-white rounded-lg shadow border border-gray-100 p-4">
-                <div class="flex items-center">
-                    <div class="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mr-3">
-                        <i class="fas fa-user-shield text-purple-600"></i>
-                    </div>
+            <div class="stat-card p-5">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-600">Administrators</p>
-                        <p class="text-xl font-bold text-gray-900" id="adminCount"><?php echo $stats['administrators']; ?></p>
+                        <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Administrators</p>
+                        <p class="text-3xl font-bold text-slate-800 mt-1" id="adminCount"><?php echo $stats['administrators']; ?></p>
+                    </div>
+                    <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+                        <i class="fas fa-user-shield text-purple-600 text-xl"></i>
                     </div>
                 </div>
+                <div class="mt-2 text-xs text-slate-400">Full access role</div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-semibold text-gray-900">All Users</h2>
-                    <div class="flex items-center space-x-4">
-                        <div class="relative">
-                            <input type="text" id="searchInput" placeholder="Search users..." 
-                                   class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                        </div>
-                        <select id="roleFilter" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500">
-                            <option value="all">All Users</option>
-                            <option value="Admin">Administrators</option>
-                            <option value="Regular_user">Regular Users</option>
-                        </select>
+        <!-- Main Table Card -->
+        <div class="main-card">
+            <div class="table-header-bg px-6 py-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fas fa-table-list text-emerald-500"></i> Registered Users
+                </h2>
+                <div class="flex flex-col sm:flex-row items-center gap-3">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="searchInput" placeholder="Search users..." 
+                               class="search-input pl-10 pr-4 py-2 w-64">
                     </div>
+                    <select id="roleFilter" class="filter-select">
+                        <option value="all">👥 All Users</option>
+                        <option value="Admin">🛡️ Administrators</option>
+                        <option value="Regular_user">👤 Regular Users</option>
+                    </select>
                 </div>
             </div>
 
             <div class="p-6">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="min-w-full divide-y divide-slate-100">
                         <thead>
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <tr class="text-left">
+                                <th class="pb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">User</th>
+                                <th class="pb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</th>
+                                <th class="pb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Role</th>
+                                <th class="pb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                                <th class="pb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Joined</th>
+                                <th class="pb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="usersTable" class="bg-white divide-y divide-gray-200">
+                        <tbody id="usersTable" class="divide-y divide-slate-100">
                             <?php foreach ($processed_users as $user): ?>
                             <tr class="table-row" data-user-id="<?php echo $user['id']; ?>" data-role="<?php echo strtolower($user['role']); ?>" data-status="<?php echo strtolower($user['status']); ?>">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center">
-                                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold mr-3">
+                                <td class="py-4 pr-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="h-10 w-10 rounded-full user-avatar flex items-center justify-center text-white font-bold text-sm shadow-md">
                                             <?php echo htmlspecialchars($user['initial']); ?>
                                         </div>
                                         <div>
-                                            <div class="font-medium text-gray-900"><?php echo htmlspecialchars($user['name']); ?></div>
-                                            <div class="text-sm text-gray-500">ID: <?php echo substr($user['id'], 0, 8); ?>...</div>
+                                            <div class="font-semibold text-slate-800"><?php echo htmlspecialchars($user['name']); ?></div>
+                                            <div class="text-xs text-slate-400 font-mono">ID: <?php echo substr($user['id'], 0, 8); ?>...</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-900"><?php echo htmlspecialchars($user['email']); ?></td>
-                                <td class="px-6 py-4">
-                                    <span class="role-badge px-2 py-1 text-xs rounded-full <?php echo $user['role'] == 'Admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'; ?>">
+                                <td class="py-4 text-sm text-slate-600"><?php echo htmlspecialchars($user['email']); ?></td>
+                                <td class="py-4">
+                                    <span class="role-badge-<?php echo $user['role'] == 'Admin' ? 'admin' : 'user'; ?> px-3 py-1 text-xs font-semibold rounded-full">
                                         <?php echo $user['role']; ?>
                                     </span>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <span class="status-badge px-2 py-1 text-xs rounded-full <?php echo $user['status'] == 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'; ?>">
+                                <td class="py-4">
+                                    <span class="status-<?php echo strtolower($user['status']); ?> px-3 py-1 text-xs font-semibold rounded-full">
                                         <?php echo $user['status']; ?>
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-500"><?php echo $user['joined']; ?></td>
-                                <td class="px-6 py-4">
-                                    <div class="flex space-x-2">
-                                        <button onclick="editUser('<?php echo $user['id']; ?>')" class="action-btn text-blue-600 hover:text-blue-700" title="Edit">
-                                            <i class="fas fa-edit"></i>
+                                <td class="py-4 text-sm text-slate-500"><?php echo $user['joined']; ?></td>
+                                <td class="py-4">
+                                    <div class="flex gap-1">
+                                        <button onclick="editUser('<?php echo $user['id']; ?>')" class="action-btn action-edit text-blue-500" title="Edit">
+                                            <i class="fas fa-pen"></i>
                                         </button>
-                                        <button onclick="resetPassword('<?php echo $user['id']; ?>')" class="action-btn text-green-600 hover:text-green-700" title="Reset Password">
+                                        <button onclick="resetPassword('<?php echo $user['id']; ?>')" class="action-btn action-key text-emerald-500" title="Reset Password">
                                             <i class="fas fa-key"></i>
                                         </button>
-                                        <button onclick="deleteUser('<?php echo $user['id']; ?>')" class="action-btn text-red-600 hover:text-red-700" title="Delete">
-                                            <i class="fas fa-trash"></i>
+                                        <button onclick="deleteUser('<?php echo $user['id']; ?>')" class="action-btn action-delete text-red-400" title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -360,69 +560,43 @@ $userName = $_SESSION['full_name'] ?? 'Administrator';
                 </div>
 
                 <?php if (empty($processed_users)): ?>
-                <div class="text-center py-8">
-                    <p class="text-gray-500">
-                        <i class="fas fa-users-cog text-3xl mb-3 text-gray-300"></i><br>
-                        No users found
-                    </p>
-                    <p class="text-sm text-gray-400 mt-2">
-                        Click "Add User" to create your first user.
-                    </p>
+                <div class="text-center py-12">
+                    <div class="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-users-slash text-3xl text-slate-400"></i>
+                    </div>
+                    <p class="text-slate-500 font-medium">No users found</p>
+                    <p class="text-sm text-slate-400 mt-1">Click "Add User" to create your first user.</p>
                 </div>
                 <?php endif; ?>
             </div>
         </div>
 
         <!-- User Roles & Permissions Section -->
-        <div class="mt-6 bg-white rounded-xl shadow border border-gray-100 p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">User Roles & Permissions</h3>
+        <div class="mt-8 permissions-card p-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-shield-alt text-emerald-500"></i> User Roles & Permissions
+            </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="border-r border-gray-200 pr-6">
-                    <h4 class="font-medium text-gray-900 mb-2 flex items-center">
-                        <i class="fas fa-user-shield text-purple-600 mr-2"></i>
-                        Administrator
+                <div class="border-r border-slate-100 pr-6">
+                    <h4 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-user-shield text-purple-500"></i> Administrator
                     </h4>
-                    <ul class="space-y-1 text-sm text-gray-600">
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            Full system access
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            Manage all content
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            User management
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            View analytics & reports
-                        </li>
+                    <ul class="space-y-2 text-sm text-slate-600">
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-500 mr-2 w-4"></i> Full system access</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-500 mr-2 w-4"></i> Manage all content</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-500 mr-2 w-4"></i> User management</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-500 mr-2 w-4"></i> View analytics & reports</li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-medium text-gray-900 mb-2 flex items-center">
-                        <i class="fas fa-user text-blue-600 mr-2"></i>
-                        Regular User
+                    <h4 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-user text-blue-500"></i> Regular User
                     </h4>
-                    <ul class="space-y-1 text-sm text-gray-600">
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            Book tours & activities
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            Write reviews
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            Save favorites
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            View personal dashboard
-                        </li>
+                    <ul class="space-y-2 text-sm text-slate-600">
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-500 mr-2 w-4"></i> Book tours & activities</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-500 mr-2 w-4"></i> Write reviews</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-500 mr-2 w-4"></i> Save favorites</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-emerald-500 mr-2 w-4"></i> View personal dashboard</li>
                     </ul>
                 </div>
             </div>
@@ -430,53 +604,53 @@ $userName = $_SESSION['full_name'] ?? 'Administrator';
     </div>
 
     <!-- Add/Edit User Modal -->
-    <div id="userModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 modal fade-in">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium text-gray-900" id="modalTitle">Add New User</h3>
-                <button onclick="closeUserModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times"></i>
+    <div id="userModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="modal-modern max-w-md w-full mx-4 p-6 fade-in">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl font-bold text-slate-800" id="modalTitle">Add New User</h3>
+                <button onclick="closeUserModal()" class="text-slate-400 hover:text-slate-600 transition text-xl">
+                    <i class="fas fa-times-circle"></i>
                 </button>
             </div>
             <form id="userForm">
                 <input type="hidden" id="userId" name="userId">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Full Name *</label>
                         <input type="text" id="userName" name="name" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email Address *</label>
                         <input type="email" id="userEmail" name="email" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
                     </div>
                     <div id="passwordField">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Password *</label>
                         <input type="password" id="userPassword" name="password"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                        <p class="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+                               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+                        <p class="text-xs text-slate-400 mt-1">Minimum 6 characters</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                        <select id="userRole" name="role" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
-                            <option value="regular_user">Regular User</option>
-                            <option value="admin">Administrator</option>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Role</label>
+                        <select id="userRole" name="role" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500">
+                            <option value="regular_user">👤 Regular User</option>
+                            <option value="admin">🛡️ Administrator</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                        <select id="userStatus" name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Status</label>
+                        <select id="userStatus" name="status" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500">
+                            <option value="active">✅ Active</option>
+                            <option value="inactive">⭕ Inactive</option>
                         </select>
                     </div>
                 </div>
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="closeUserModal()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" onclick="closeUserModal()" class="px-5 py-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition font-medium text-slate-600">
                         Cancel
                     </button>
-                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl hover:from-emerald-700 hover:to-emerald-800 transition shadow-md font-medium">
                         <i class="fas fa-save mr-2"></i> Save User
                     </button>
                 </div>
@@ -485,34 +659,34 @@ $userName = $_SESSION['full_name'] ?? 'Administrator';
     </div>
 
     <!-- Reset Password Modal -->
-    <div id="resetPasswordModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 modal fade-in">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium text-gray-900">Reset Password</h3>
-                <button onclick="closeResetPasswordModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times"></i>
+    <div id="resetPasswordModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="modal-modern max-w-md w-full mx-4 p-6 fade-in">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl font-bold text-slate-800">Reset Password</h3>
+                <button onclick="closeResetPasswordModal()" class="text-slate-400 hover:text-slate-600 transition text-xl">
+                    <i class="fas fa-times-circle"></i>
                 </button>
             </div>
             <form id="resetPasswordForm">
                 <input type="hidden" id="resetUserId" name="resetUserId">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">New Password *</label>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">New Password *</label>
                         <input type="password" id="newPassword" name="new_password" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                        <p class="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+                               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+                        <p class="text-xs text-slate-400 mt-1">Minimum 6 characters</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password *</label>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Confirm Password *</label>
                         <input type="password" id="confirmPassword" name="confirm_password" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
                     </div>
                 </div>
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="closeResetPasswordModal()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" onclick="closeResetPasswordModal()" class="px-5 py-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition font-medium text-slate-600">
                         Cancel
                     </button>
-                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl hover:from-emerald-700 hover:to-emerald-800 transition shadow-md font-medium">
                         <i class="fas fa-key mr-2"></i> Reset Password
                     </button>
                 </div>
@@ -521,20 +695,20 @@ $userName = $_SESSION['full_name'] ?? 'Administrator';
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 modal fade-in">
+    <div id="deleteModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="modal-modern max-w-md w-full mx-4 p-6 fade-in">
             <div class="text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                    <i class="fas fa-exclamation-triangle text-red-600"></i>
+                <div class="mx-auto h-14 w-14 rounded-2xl bg-red-100 flex items-center justify-center mb-4">
+                    <i class="fas fa-trash-alt text-red-600 text-2xl"></i>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Delete User</h3>
-                <p class="text-sm text-gray-500 mb-4">Are you sure you want to delete this user? This action cannot be undone.</p>
-                <div class="flex justify-center space-x-3">
-                    <button onclick="closeDeleteModal()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Delete User</h3>
+                <p class="text-slate-500 text-sm mb-6">Are you sure you want to delete this user? This action cannot be undone.</p>
+                <div class="flex justify-center gap-3">
+                    <button onclick="closeDeleteModal()" class="px-5 py-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition font-medium text-slate-600">
                         Cancel
                     </button>
-                    <button onclick="confirmDelete()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-                        Delete
+                    <button onclick="confirmDelete()" class="px-5 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition shadow-md font-medium">
+                        Delete Permanently
                     </button>
                 </div>
             </div>
@@ -559,7 +733,7 @@ $userName = $_SESSION['full_name'] ?? 'Administrator';
             let adminCount = 0;
             
             rows.forEach(row => {
-                const userName = row.querySelector('td:first-child .font-medium')?.innerText.toLowerCase() || '';
+                const userName = row.querySelector('td:first-child .font-semibold')?.innerText.toLowerCase() || '';
                 const userRole = row.querySelector('td:nth-child(3) span')?.innerText || '';
                 const userStatus = row.querySelector('td:nth-child(4) span')?.innerText || '';
                 
@@ -576,7 +750,6 @@ $userName = $_SESSION['full_name'] ?? 'Administrator';
                 }
             });
             
-            // Update statistics
             document.getElementById('totalUsers').textContent = visibleCount;
             document.getElementById('activeUsers').textContent = activeCount;
             document.getElementById('adminCount').textContent = adminCount;
@@ -588,12 +761,10 @@ $userName = $_SESSION['full_name'] ?? 'Administrator';
         // Show notification
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
-            notification.className = `toast-notification px-6 py-3 rounded-lg shadow-lg ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
+            notification.className = `toast-notification fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 ${type === 'success' ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' : 'bg-gradient-to-r from-red-500 to-red-600'} text-white`;
             notification.innerHTML = `
-                <div class="flex items-center">
-                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
-                    <span>${message}</span>
-                </div>
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'} text-lg"></i>
+                <span class="font-medium">${message}</span>
             `;
             document.body.appendChild(notification);
             
@@ -691,15 +862,12 @@ $userName = $_SESSION['full_name'] ?? 'Administrator';
                     const data = await response.json();
                     
                     if (data.success) {
-                        // Remove row from table
                         const row = document.querySelector(`tr[data-user-id="${userToDelete}"]`);
                         if (row) row.remove();
                         
                         showNotification(data.message, 'success');
-                        filterTable(); // Update statistics
+                        filterTable();
                         closeDeleteModal();
-                        
-                        // Reload page after 1 second to refresh data
                         setTimeout(() => location.reload(), 1000);
                     } else {
                         showNotification(data.message, 'error');

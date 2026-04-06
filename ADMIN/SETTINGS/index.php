@@ -76,99 +76,31 @@ $systemInfo = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daeteño Admin - System Settings</title>
-    <!-- Font Awesome 6 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { font-family: 'Inter', sans-serif; }
         
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f1f5f9;
-            color: #0f172a;
-            line-height: 1.5;
-        }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #e2e8f0;
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 10px;
-        }
-        
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        .fade-in {
-            animation: fadeInUp 0.3s ease-out;
-        }
-        
-        /* Toast Notification */
-        .toast-success {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            background: #10b981;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 1100;
-            transform: translateX(400px);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            font-weight: 500;
-            font-size: 0.875rem;
-        }
-        
-        .toast-success.show {
-            transform: translateX(0);
+        /* Glass Header */
+        .glass-header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            backdrop-filter: blur(10px);
         }
         
         /* Sidebar Navigation */
         .settings-sidebar {
             background: white;
-            border-radius: 20px;
+            border-radius: 24px;
             border: 1px solid #e2e8f0;
             overflow: hidden;
             position: sticky;
             top: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        }
+        .settings-sidebar:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
         }
         
         .nav-item {
@@ -177,60 +109,59 @@ $systemInfo = [
             gap: 12px;
             padding: 12px 16px;
             margin: 4px 8px;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 0.875rem;
             font-weight: 500;
             color: #475569;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
         }
-        
         .nav-item i {
             width: 20px;
             font-size: 1rem;
             color: #94a3b8;
             transition: all 0.2s ease;
         }
-        
         .nav-item:hover {
             background: #f8fafc;
             color: #0f172a;
+            transform: translateX(4px);
         }
-        
         .nav-item:hover i {
-            color: #0284c7;
+            color: #3b82f6;
         }
-        
         .nav-item.active {
-            background: #e0f2fe;
-            color: #0284c7;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            color: #2563eb;
         }
-        
         .nav-item.active i {
-            color: #0284c7;
+            color: #2563eb;
         }
         
         /* Settings Cards */
         .settings-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 24px;
             border: 1px solid #e2e8f0;
             overflow: hidden;
-            margin-bottom: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        }
+        .settings-card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
         }
         
         .card-header {
             padding: 20px 24px;
             border-bottom: 1px solid #e2e8f0;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
         }
-        
         .card-header h3 {
             font-size: 1.125rem;
-            font-weight: 600;
+            font-weight: 700;
             color: #0f172a;
             margin-bottom: 4px;
         }
-        
         .card-header p {
             font-size: 0.875rem;
             color: #64748b;
@@ -244,7 +175,6 @@ $systemInfo = [
         .form-group {
             margin-bottom: 20px;
         }
-        
         .form-group label {
             display: block;
             font-size: 0.875rem;
@@ -257,19 +187,17 @@ $systemInfo = [
             width: 100%;
             padding: 10px 14px;
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 0.875rem;
             font-family: 'Inter', sans-serif;
             transition: all 0.2s ease;
             background: white;
         }
-        
         .form-control:focus {
             outline: none;
-            border-color: #0284c7;
-            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-        
         textarea.form-control {
             resize: vertical;
             min-height: 80px;
@@ -287,7 +215,6 @@ $systemInfo = [
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
         }
-        
         .row-3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -301,8 +228,14 @@ $systemInfo = [
             justify-content: space-between;
             padding: 12px 0;
             border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
         }
-        
+        .switch-wrapper:hover {
+            background: #f8fafc;
+            margin: 0 -12px;
+            padding: 12px 12px;
+            border-radius: 14px;
+        }
         .switch-wrapper:last-child {
             border-bottom: none;
         }
@@ -310,14 +243,12 @@ $systemInfo = [
         .switch-label {
             flex: 1;
         }
-        
         .switch-label h4 {
             font-size: 0.875rem;
             font-weight: 600;
             color: #1e293b;
             margin-bottom: 2px;
         }
-        
         .switch-label p {
             font-size: 0.75rem;
             color: #64748b;
@@ -330,13 +261,11 @@ $systemInfo = [
             height: 24px;
             flex-shrink: 0;
         }
-        
         .switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
-        
         .slider {
             position: absolute;
             cursor: pointer;
@@ -348,7 +277,6 @@ $systemInfo = [
             transition: 0.25s;
             border-radius: 34px;
         }
-        
         .slider:before {
             position: absolute;
             content: "";
@@ -361,11 +289,9 @@ $systemInfo = [
             border-radius: 50%;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
-        
         input:checked + .slider {
-            background-color: #0284c7;
+            background-color: #3b82f6;
         }
-        
         input:checked + .slider:before {
             transform: translateX(24px);
         }
@@ -374,32 +300,30 @@ $systemInfo = [
         .info-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 14px;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
         .info-card:hover {
-            border-color: #cbd5e1;
+            border-color: #3b82f6;
             background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        
         .info-card .info-icon {
             width: 32px;
             height: 32px;
-            background: #e0f2fe;
-            border-radius: 10px;
+            background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 12px;
         }
-        
         .info-card .info-icon i {
             font-size: 1rem;
-            color: #0284c7;
+            color: #3b82f6;
         }
-        
         .info-card .info-label {
             font-size: 0.7rem;
             text-transform: uppercase;
@@ -407,7 +331,6 @@ $systemInfo = [
             color: #64748b;
             margin-bottom: 4px;
         }
-        
         .info-card .info-value {
             font-size: 1rem;
             font-weight: 600;
@@ -422,110 +345,130 @@ $systemInfo = [
             padding: 12px;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 14px;
+            border-radius: 16px;
             margin-bottom: 8px;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
         .backup-item:hover {
             background: white;
-            border-color: #cbd5e1;
+            border-color: #3b82f6;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        
         .backup-info {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        
         .backup-icon {
             width: 40px;
             height: 40px;
-            background: #e0f2fe;
-            border-radius: 12px;
+            background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        
         .backup-icon i {
             font-size: 1.125rem;
-            color: #0284c7;
+            color: #3b82f6;
         }
-        
         .backup-details h4 {
             font-size: 0.875rem;
             font-weight: 600;
             color: #0f172a;
             margin-bottom: 4px;
         }
-        
         .backup-meta {
             display: flex;
             gap: 12px;
             font-size: 0.7rem;
             color: #64748b;
         }
-        
         .backup-actions {
             display: flex;
             gap: 4px;
         }
-        
         .backup-actions button {
             background: transparent;
             border: none;
             padding: 8px;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s ease;
+            color: #64748b;
         }
+        .backup-actions button:hover {
+            background: #f1f5f9;
+            transform: scale(1.05);
+        }
+        .backup-actions button:first-child:hover { color: #3b82f6; }
+        .backup-actions button:nth-child(2):hover { color: #f59e0b; }
+        .backup-actions button:last-child:hover { color: #ef4444; }
         
         /* Buttons */
         .btn {
             padding: 10px 20px;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             font-family: 'Inter', sans-serif;
         }
-        
         .btn-primary {
-            background: #0284c7;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
         }
-        
         .btn-primary:hover {
-            background: #0369a1;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
-        
         .btn-secondary {
             background: white;
             border: 1px solid #e2e8f0;
             color: #475569;
         }
-        
         .btn-secondary:hover {
             background: #f8fafc;
             border-color: #cbd5e1;
+            transform: translateY(-1px);
         }
-        
         .btn-danger {
-            background: #ef4444;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
         }
-        
         .btn-danger:hover {
-            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
-        
         .btn-sm {
             padding: 6px 14px;
             font-size: 0.75rem;
+        }
+        
+        /* Toast Notification */
+        .toast-success {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1100;
+            transform: translateX(400px);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        .toast-success.show {
+            transform: translateX(0);
         }
         
         /* Modal */
@@ -545,30 +488,26 @@ $systemInfo = [
             visibility: hidden;
             transition: all 0.25s ease;
         }
-        
         .modal-overlay.active {
             opacity: 1;
             visibility: visible;
         }
-        
         .modal-container {
             background: white;
-            border-radius: 24px;
+            border-radius: 28px;
             max-width: 420px;
             width: 90%;
             transform: scale(0.95);
             transition: transform 0.25s ease;
             text-align: center;
-            padding: 24px;
+            padding: 28px;
         }
-        
         .modal-overlay.active .modal-container {
             transform: scale(1);
         }
-        
         .modal-icon {
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
             background: #fef3c7;
             border-radius: 50%;
             display: flex;
@@ -576,25 +515,21 @@ $systemInfo = [
             justify-content: center;
             margin: 0 auto 16px;
         }
-        
         .modal-icon i {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             color: #f59e0b;
         }
-        
         .modal-title {
-            font-size: 1.125rem;
-            font-weight: 600;
+            font-size: 1.25rem;
+            font-weight: 700;
             color: #0f172a;
             margin-bottom: 8px;
         }
-        
         .modal-message {
             font-size: 0.875rem;
             color: #64748b;
             margin-bottom: 24px;
         }
-        
         .modal-buttons {
             display: flex;
             justify-content: center;
@@ -603,75 +538,68 @@ $systemInfo = [
         
         /* Danger Zone */
         .danger-zone {
-            background: #fef2f2;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
             border: 1px solid #fecaca;
-            border-radius: 16px;
-            padding: 16px;
-            margin-top: 16px;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+            transition: all 0.3s ease;
         }
-        
-        /* Utility Classes */
-        .text-right {
-            text-align: right;
-        }
-        
-        .mt-4 {
-            margin-top: 16px;
-        }
-        
-        .mt-6 {
-            margin-top: 24px;
-        }
-        
-        .mb-2 {
-            margin-bottom: 8px;
-        }
-        
-        .mb-4 {
-            margin-bottom: 16px;
-        }
-        
-        .pt-4 {
-            padding-top: 16px;
-        }
-        
-        .pt-6 {
-            padding-top: 24px;
-        }
-        
-        .border-top {
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        .flex {
-            display: flex;
-        }
-        
-        .justify-end {
-            justify-content: flex-end;
-        }
-        
-        .justify-between {
-            justify-content: space-between;
-        }
-        
-        .gap-3 {
-            gap: 12px;
-        }
-        
-        .gap-4 {
-            gap: 16px;
+        .danger-zone:hover {
+            border-color: #ef4444;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
         }
         
         /* Settings Sections */
         .settings-section {
             display: none;
         }
-        
         .settings-section.active {
             display: block;
-            animation: fadeInUp 0.3s ease-out;
+            animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Blue info box */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 20px;
+            padding: 16px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+        }
+        .info-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Warning box */
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 20px;
+            padding: 16px;
+            margin-top: 24px;
+            transition: all 0.3s ease;
+        }
+        .warning-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+        }
+        
+        /* Avatar */
+        .admin-avatar {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
         
         /* Responsive */
         @media (max-width: 768px) {
@@ -679,40 +607,33 @@ $systemInfo = [
                 grid-template-columns: 1fr;
                 gap: 16px;
             }
-            
             .card-header, .card-body {
                 padding: 16px;
             }
-            
             .settings-sidebar {
                 position: relative;
                 top: 0;
                 margin-bottom: 20px;
             }
         }
-        
-        @media (max-width: 1024px) {
-            .lg\:grid-cols-4 {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
-<body>
-    <!-- Admin Header -->
-    <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+<body class="bg-gradient-to-br from-slate-50 via-white to-blue-50/20">
+    
+    <!-- Glass Header -->
+    <div class="glass-header text-white sticky top-0 z-50 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between py-4">
-                <a href="../dashboard.php" class="flex items-center text-white/80 hover:text-white transition-all">
-                    <i class="fas fa-arrow-left mr-2 text-sm"></i>
-                    <span class="text-sm font-medium">Back to Dashboard</span>
+                <a href="../dashboard.php" class="flex items-center text-white/80 hover:text-white transition-all duration-200 hover:scale-105 group">
+                    <i class="fas fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
+                    <span class="text-sm font-medium ml-2">Back to Dashboard</span>
                 </a>
                 <div class="flex items-center gap-4">
                     <div class="text-right">
                         <p class="text-xs text-slate-300">Logged in as</p>
                         <p class="text-sm font-semibold text-white">Admin User</p>
                     </div>
-                    <div class="h-9 w-9 rounded-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shadow-md">
+                    <div class="h-9 w-9 rounded-full admin-avatar flex items-center justify-center shadow-md">
                         <i class="fas fa-user text-sm text-white"></i>
                     </div>
                 </div>
@@ -728,10 +649,11 @@ $systemInfo = [
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
         <!-- Page Header -->
         <div class="mb-8">
-            <h1 class="text-2xl font-bold text-slate-800">System Settings</h1>
-            <p class="text-slate-500 mt-1">Configure and manage your system preferences</p>
+            <h1 class="text-3xl font-bold text-slate-800 tracking-tight">System Settings</h1>
+            <p class="text-slate-500 mt-2">Configure and manage your system preferences</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -774,7 +696,10 @@ $systemInfo = [
                 <div id="section-general" class="settings-section <?php echo $activeTab === 'general' ? 'active' : ''; ?>">
                     <div class="settings-card">
                         <div class="card-header">
-                            <h3>General Settings</h3>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-sliders-h text-blue-500"></i>
+                                <h3>General Settings</h3>
+                            </div>
                             <p>Configure basic system preferences</p>
                         </div>
                         <div class="card-body">
@@ -850,7 +775,9 @@ $systemInfo = [
                                 </div>
                                 
                                 <div class="mt-6 pt-4 border-top">
-                                    <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 16px;">System Information</h4>
+                                    <h4 class="font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                                        <i class="fas fa-microchip text-blue-500"></i> System Information
+                                    </h4>
                                     <div class="row-3">
                                         <div class="info-card">
                                             <div class="info-icon"><i class="fab fa-php"></i></div>
@@ -885,7 +812,7 @@ $systemInfo = [
                                     </div>
                                 </div>
                                 
-                                <div class="flex justify-end gap-3 mt-6 pt-4 border-top">
+                                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-200">
                                     <button type="button" onclick="resetForm(this.form)" class="btn btn-secondary">Cancel</button>
                                     <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-2"></i> Save Changes</button>
                                 </div>
@@ -898,7 +825,10 @@ $systemInfo = [
                 <div id="section-website" class="settings-section <?php echo $activeTab === 'website' ? 'active' : ''; ?>">
                     <div class="settings-card">
                         <div class="card-header">
-                            <h3>Website Settings</h3>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-globe text-blue-500"></i>
+                                <h3>Website Settings</h3>
+                            </div>
                             <p>Configure website appearance and content</p>
                         </div>
                         <div class="card-body">
@@ -936,7 +866,7 @@ $systemInfo = [
                                     </div>
                                 </div>
                                 
-                                <div class="flex justify-end gap-3 mt-6 pt-4 border-top">
+                                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-200">
                                     <button type="button" onclick="resetForm(this.form)" class="btn btn-secondary">Cancel</button>
                                     <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-2"></i> Save Changes</button>
                                 </div>
@@ -949,7 +879,10 @@ $systemInfo = [
                 <div id="section-email" class="settings-section <?php echo $activeTab === 'email' ? 'active' : ''; ?>">
                     <div class="settings-card">
                         <div class="card-header">
-                            <h3>Email Settings</h3>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-envelope text-blue-500"></i>
+                                <h3>Email Settings</h3>
+                            </div>
                             <p>Configure email sending preferences</p>
                         </div>
                         <div class="card-body">
@@ -1008,17 +941,19 @@ $systemInfo = [
                                     </div>
                                 </div>
                                 
-                                <div style="background: #e0f2fe; border-radius: 14px; padding: 16px; margin: 16px 0;">
+                                <div class="info-box">
                                     <div class="flex justify-between items-center">
                                         <div>
-                                            <h4 style="font-size: 0.875rem; font-weight: 600; color: #0369a1;">Test Email Configuration</h4>
-                                            <p style="font-size: 0.75rem; color: #0284c7;">Send a test email to verify your settings</p>
+                                            <h4 class="font-semibold text-blue-700 flex items-center gap-2">
+                                                <i class="fas fa-paper-plane"></i> Test Email Configuration
+                                            </h4>
+                                            <p class="text-xs text-blue-600 mt-1">Send a test email to verify your settings</p>
                                         </div>
                                         <button type="button" onclick="sendTestEmail()" class="btn btn-primary btn-sm">Send Test</button>
                                     </div>
                                 </div>
                                 
-                                <div class="flex justify-end gap-3 mt-6 pt-4 border-top">
+                                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-200">
                                     <button type="button" onclick="resetForm(this.form)" class="btn btn-secondary">Cancel</button>
                                     <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-2"></i> Save Changes</button>
                                 </div>
@@ -1031,7 +966,10 @@ $systemInfo = [
                 <div id="section-security" class="settings-section <?php echo $activeTab === 'security' ? 'active' : ''; ?>">
                     <div class="settings-card">
                         <div class="card-header">
-                            <h3>Security Settings</h3>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-shield-alt text-blue-500"></i>
+                                <h3>Security Settings</h3>
+                            </div>
                             <p>Configure security and authentication preferences</p>
                         </div>
                         <div class="card-body">
@@ -1101,14 +1039,16 @@ $systemInfo = [
                                 <div class="danger-zone">
                                     <div class="flex justify-between items-center">
                                         <div>
-                                            <h4 style="font-size: 0.875rem; font-weight: 600; color: #dc2626;">Danger Zone</h4>
-                                            <p style="font-size: 0.75rem; color: #ef4444;">Clear all system cache and temporary data</p>
+                                            <h4 class="font-semibold text-red-600 flex items-center gap-2">
+                                                <i class="fas fa-exclamation-triangle"></i> Danger Zone
+                                            </h4>
+                                            <p class="text-xs text-red-500 mt-1">Clear all system cache and temporary data</p>
                                         </div>
                                         <button type="button" onclick="confirmClearCache()" class="btn btn-danger btn-sm">Clear Cache</button>
                                     </div>
                                 </div>
                                 
-                                <div class="flex justify-end gap-3 mt-6 pt-4 border-top">
+                                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-200">
                                     <button type="button" onclick="resetForm(this.form)" class="btn btn-secondary">Cancel</button>
                                     <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-2"></i> Save Changes</button>
                                 </div>
@@ -1121,7 +1061,10 @@ $systemInfo = [
                 <div id="section-notifications" class="settings-section <?php echo $activeTab === 'notifications' ? 'active' : ''; ?>">
                     <div class="settings-card">
                         <div class="card-header">
-                            <h3>Notification Settings</h3>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-bell text-blue-500"></i>
+                                <h3>Notification Settings</h3>
+                            </div>
                             <p>Configure email and system notifications</p>
                         </div>
                         <div class="card-body">
@@ -1184,7 +1127,7 @@ $systemInfo = [
                                     <div class="form-hint">One email per line</div>
                                 </div>
                                 
-                                <div class="flex justify-end gap-3 mt-6 pt-4 border-top">
+                                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-200">
                                     <button type="button" onclick="resetForm(this.form)" class="btn btn-secondary">Cancel</button>
                                     <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-2"></i> Save Changes</button>
                                 </div>
@@ -1197,15 +1140,20 @@ $systemInfo = [
                 <div id="section-backup" class="settings-section <?php echo $activeTab === 'backup' ? 'active' : ''; ?>">
                     <div class="settings-card">
                         <div class="card-header">
-                            <h3>Backup & Restore</h3>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-database text-blue-500"></i>
+                                <h3>Backup & Restore</h3>
+                            </div>
                             <p>Manage database backups and restoration</p>
                         </div>
                         <div class="card-body">
-                            <div style="background: #e0f2fe; border-radius: 14px; padding: 16px; margin-bottom: 24px;">
+                            <div class="info-box">
                                 <div class="flex justify-between items-center">
                                     <div>
-                                        <h4 style="font-size: 0.875rem; font-weight: 600; color: #0369a1;">Create New Backup</h4>
-                                        <p style="font-size: 0.75rem; color: #0284c7;">Generate a full database backup</p>
+                                        <h4 class="font-semibold text-blue-700 flex items-center gap-2">
+                                            <i class="fas fa-plus-circle"></i> Create New Backup
+                                        </h4>
+                                        <p class="text-xs text-blue-600 mt-1">Generate a full database backup</p>
                                     </div>
                                     <form method="POST">
                                         <input type="hidden" name="action" value="create_backup">
@@ -1214,13 +1162,15 @@ $systemInfo = [
                                 </div>
                             </div>
                             
-                            <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 12px;">Available Backups</h4>
-                            <div style="margin-bottom: 24px;">
+                            <h4 class="font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                                <i class="fas fa-archive text-blue-500"></i> Available Backups
+                            </h4>
+                            <div class="mb-6">
                                 <?php if (empty($backups)): ?>
-                                    <div style="text-align: center; padding: 40px; background: #f8fafc; border-radius: 14px;">
-                                        <i class="fas fa-database" style="font-size: 2rem; color: #cbd5e1; margin-bottom: 12px;"></i>
-                                        <p style="color: #64748b;">No backups available</p>
-                                        <p style="font-size: 0.75rem; color: #94a3b8;">Create your first backup using the button above</p>
+                                    <div class="text-center py-12 bg-slate-50 rounded-2xl">
+                                        <i class="fas fa-database text-4xl text-slate-300 mb-3"></i>
+                                        <p class="text-slate-500 font-medium">No backups available</p>
+                                        <p class="text-xs text-slate-400 mt-1">Create your first backup using the button above</p>
                                     </div>
                                 <?php else: ?>
                                     <?php foreach ($backups as $backup): ?>
@@ -1244,19 +1194,19 @@ $systemInfo = [
                                                     <input type="hidden" name="action" value="restore_backup">
                                                     <button type="submit" title="Restore"><i class="fas fa-undo-alt"></i></button>
                                                 </form>
-                                                <button onclick="confirmDeleteBackup('<?php echo $backup['name']; ?>')" title="Delete"><i class="fas fa-trash"></i></button>
+                                                <button onclick="confirmDeleteBackup('<?php echo $backup['name']; ?>')" title="Delete"><i class="fas fa-trash-alt"></i></button>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </div>
                             
-                            <div class="flex justify-between items-center pt-4 border-top">
+                            <div class="flex justify-between items-center pt-4 border-t border-slate-200">
                                 <div>
-                                    <h4 style="font-size: 0.875rem; font-weight: 600;">Auto Backup Schedule</h4>
-                                    <p style="font-size: 0.75rem; color: #64748b;">Automatically create backups on a schedule</p>
+                                    <h4 class="font-semibold text-slate-700">Auto Backup Schedule</h4>
+                                    <p class="text-xs text-slate-500 mt-1">Automatically create backups on a schedule</p>
                                 </div>
-                                <select class="form-control" style="width: auto;">
+                                <select class="form-control w-auto">
                                     <option value="disabled" selected>Disabled</option>
                                     <option value="daily">Daily</option>
                                     <option value="weekly">Weekly</option>
@@ -1264,12 +1214,12 @@ $systemInfo = [
                                 </select>
                             </div>
                             
-                            <div style="background: #fef3c7; border-radius: 14px; padding: 16px; margin-top: 24px;">
-                                <div class="flex">
-                                    <i class="fas fa-exclamation-triangle" style="color: #f59e0b; margin-right: 12px; margin-top: 2px;"></i>
+                            <div class="warning-box">
+                                <div class="flex gap-3">
+                                    <i class="fas fa-exclamation-triangle text-amber-600 text-lg"></i>
                                     <div>
-                                        <h4 style="font-size: 0.75rem; font-weight: 600; color: #92400e;">Important Note</h4>
-                                        <p style="font-size: 0.7rem; color: #b45309;">Restoring a backup will overwrite current data. This action cannot be undone. We recommend creating a backup before restoring.</p>
+                                        <h4 class="text-xs font-bold text-amber-800">Important Note</h4>
+                                        <p class="text-xs text-amber-700 mt-1">Restoring a backup will overwrite current data. This action cannot be undone. We recommend creating a backup before restoring.</p>
                                     </div>
                                 </div>
                             </div>
